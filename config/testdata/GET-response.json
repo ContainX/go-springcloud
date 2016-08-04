@@ -1,0 +1,7 @@
+{
+  "foo": "bar",
+  "datasource": {
+    "host": "localhost:3306",
+    "user": "test"
+  }
+}
