@@ -27,3 +27,6 @@ _testmain.go
 
 main.go
 boot.go
+test/
+testing
+go-springcloud

@@ -1,0 +1,10 @@
+{
+  "client": {
+    "serviceUrls": [
+      "http://1.1.1.1:8761"
+    ],
+    "pollIntervalSeconds": 20,
+    "registerWithEureka": true,
+    "retries": 4
+  }
+}

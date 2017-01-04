@@ -27,6 +27,7 @@ const (
 	configPathFmt = "%s/%s/%s-%s.%s"
 	extJSON       = "json"
 	extPROP       = "properties"
+	extYAML       = "yml"
 )
 
 var (
@@ -47,6 +48,14 @@ type ConfigClient interface {
 	// Fetch queries the remote configuration service and returns
 	// the result as a JSON string
 	FetchAsJSON() (string, error)
+
+	// Fetch queries the remote configuration service and returns
+	// the result as a YAML string
+	FetchAsYAML() (string, error)
+
+	// Fetch queries the remote configuration service and returns
+	// the result as a Properties string
+	FetchAsProperties() (string, error)
 
 	// Bootstrap returns a reference to the current bootstrap settings
 	Bootstrap() *Bootstrap
@@ -202,8 +211,20 @@ func (c *client) FetchAsMap() (map[string]string, error) {
 	return m, nil
 }
 
+func (c *client) FetchAsProperties() (string, error) {
+	return c.fetchAsString(extPROP)
+}
+
 func (c *client) FetchAsJSON() (string, error) {
-	uri := c.buildRequestURI(extJSON)
+	return c.fetchAsString(extJSON)
+}
+
+func (c *client) FetchAsYAML() (string, error) {
+	return c.fetchAsString(extYAML)
+}
+
+func (c *client) fetchAsString(extension string) (string, error) {
+	uri := c.buildRequestURI(extension)
 	resp := httpclient.Get(uri, nil)
 	return resp.Content, resp.Error
 }

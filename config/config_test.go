@@ -1,15 +1,15 @@
 package config
 
 import (
-	"testing"
 	"github.com/ContainX/go-utils/mockrest"
 	"github.com/stretchr/testify/assert"
 	"strings"
+	"testing"
 )
 
 const (
 	FilePropertyResp = "testdata/GET-properties_response.txt"
-	FileJsonResp = "testdata/GET-response.json"
+	FileJsonResp     = "testdata/GET-response.json"
 )
 
 type testStruct struct {
@@ -21,7 +21,7 @@ func TestConfigAsMap(t *testing.T) {
 	defer server.Stop()
 
 	// Configure Bootstrap - use dynamic mockrest server host/port
-	cfg, err := New(Bootstrap{ Name: "myapp", URI: server.Start() })
+	cfg, err := New(Bootstrap{Name: "myapp", URI: server.Start()})
 	assert.NoError(t, err)
 
 	// Test fetch remote config as Map
@@ -35,7 +35,7 @@ func TestConfigAsStruct(t *testing.T) {
 	defer server.Stop()
 
 	// Configure Bootstrap - use dynamic mockrest server host/port
-	cfg, err := New(Bootstrap{ Name: "myapp", URI: server.Start() })
+	cfg, err := New(Bootstrap{Name: "myapp", URI: server.Start()})
 	assert.NoError(t, err)
 
 	ts := &testStruct{}
@@ -51,7 +51,7 @@ func TestConfigAsJSON(t *testing.T) {
 	defer server.Stop()
 
 	// Configure Bootstrap - use dynamic mockrest server host/port
-	cfg, err := New(Bootstrap{ Name: "myapp", URI: server.Start() })
+	cfg, err := New(Bootstrap{Name: "myapp", URI: server.Start()})
 
 	if assert.NoError(t, err) {
 		json, _ := cfg.FetchAsJSON()
@@ -59,7 +59,7 @@ func TestConfigAsJSON(t *testing.T) {
 	}
 }
 
-func TestLoadFromFile(t  *testing.T) {
+func TestLoadFromFile(t *testing.T) {
 	c, err := LoadFromFile("testdata/LOAD-test.json")
 
 	if assert.NoError(t, err, "") {
