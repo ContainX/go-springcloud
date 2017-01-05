@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ContainX/go-utils/encoding"
+	"github.com/ContainX/go-utils/envsubst"
 	"github.com/ContainX/go-utils/httpclient"
 	"os"
 	"strings"
@@ -39,6 +40,10 @@ type ConfigClient interface {
 	// Fetch queries the remote configuration service and populates the
 	// target value
 	Fetch(target interface{}) error
+
+	// FetchWithSubstitution fetches a remote config, substitutes environment variables
+	// and writes it to the target
+	FetchWithSubstitution(target interface{}) error
 
 	// Fetch queries the remote configuration service and populates
 	// a map of kv strings.   This call flattens hierarchical values
@@ -194,6 +199,20 @@ func (c *client) Fetch(target interface{}) error {
 	return nil
 }
 
+func (c *client) FetchWithSubstitution(target interface{}) error {
+	content, err := c.FetchAsYAML()
+	if err != nil {
+		return err
+	}
+
+	enc, _ := encoding.NewEncoder(encoding.YAML)
+
+	if err = enc.UnMarshalStr(content, target); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (c *client) FetchAsMap() (map[string]string, error) {
 	uri := c.buildRequestURI(extPROP)
 	resp := httpclient.Get(uri, nil)
@@ -225,8 +244,15 @@ func (c *client) FetchAsYAML() (string, error) {
 
 func (c *client) fetchAsString(extension string) (string, error) {
 	uri := c.buildRequestURI(extension)
+
 	resp := httpclient.Get(uri, nil)
-	return resp.Content, resp.Error
+	content := resp.Content
+	if resp.Error == nil {
+		content = envsubst.Substitute(strings.NewReader(content), false, func(s string) string {
+			return os.Getenv(s)
+		})
+	}
+	return content, resp.Error
 }
 
 func (c *client) Bootstrap() *Bootstrap {
